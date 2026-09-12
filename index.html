@@ -1,0 +1,1310 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <title>SehatDost — AI Clinic Assistant</title>
+
+<style>
+  * {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+  }
+
+  body {
+    font-family:
+      Inter,
+      -apple-system,
+      BlinkMacSystemFont,
+      "Segoe UI",
+      sans-serif;
+
+    min-height: 100vh;
+
+    background: #f5f7fa;
+
+    color: #172033;
+
+    display: flex;
+    justify-content: center;
+  }
+
+  .app {
+    width: 100%;
+    max-width: 850px;
+    min-height: 100vh;
+
+    display: flex;
+    flex-direction: column;
+
+    background: #ffffff;
+  }
+
+  /* =========================
+     Header
+  ========================= */
+
+  header {
+    height: 72px;
+
+    padding: 0 24px;
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    background: #ffffff;
+
+    border-bottom: 1px solid #e8ebf0;
+  }
+
+  .brand {
+    display: flex;
+    align-items: center;
+    gap: 11px;
+  }
+
+  .brand-icon {
+    width: 40px;
+    height: 40px;
+
+    border-radius: 11px;
+
+    display: grid;
+    place-items: center;
+
+    background: #eaf2ff;
+
+    color: #2563eb;
+
+    border: 1px solid #d7e5ff;
+
+    font-size: 20px;
+    font-weight: 600;
+  }
+
+  .brand h1 {
+    font-size: 17px;
+    font-weight: 650;
+
+    color: #172033;
+  }
+
+  .brand p {
+    margin-top: 2px;
+
+    color: #8a94a6;
+
+    font-size: 11px;
+  }
+
+  .status {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+
+    color: #7b8494;
+
+    font-size: 11px;
+  }
+
+  .status-dot {
+    width: 7px;
+    height: 7px;
+
+    border-radius: 50%;
+
+    background: #22c55e;
+  }
+
+  /* =========================
+     Chat
+  ========================= */
+
+  .chat {
+    flex: 1;
+
+    padding: 30px 20px 20px;
+
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+
+    overflow-y: auto;
+
+    background: #f8f9fb;
+  }
+
+  .welcome {
+    max-width: 500px;
+
+    margin: auto;
+
+    text-align: center;
+  }
+
+  .welcome-icon {
+    width: 64px;
+    height: 64px;
+
+    margin: 0 auto 18px;
+
+    border-radius: 18px;
+
+    display: grid;
+    place-items: center;
+
+    background: #eaf2ff;
+
+    border: 1px solid #d9e6ff;
+
+    color: #2563eb;
+
+    font-size: 28px;
+  }
+
+  .welcome h2 {
+    font-size: 27px;
+
+    font-weight: 650;
+
+    color: #172033;
+  }
+
+  .welcome p {
+    margin-top: 9px;
+
+    color: #7c8798;
+
+    font-size: 13px;
+
+    line-height: 1.6;
+  }
+
+  /* =========================
+     Messages
+  ========================= */
+
+  .message {
+    display: flex;
+
+    gap: 9px;
+
+    align-items: flex-end;
+
+    animation: messageIn .2s ease;
+  }
+
+  .message.user {
+    justify-content: flex-end;
+  }
+
+  @keyframes messageIn {
+    from {
+      opacity: 0;
+      transform: translateY(5px);
+    }
+
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .message-avatar {
+    width: 30px;
+    height: 30px;
+
+    flex-shrink: 0;
+
+    border-radius: 9px;
+
+    display: grid;
+    place-items: center;
+
+    background: #ffffff;
+
+    border: 1px solid #e3e7ed;
+
+    color: #6d7788;
+
+    font-size: 10px;
+  }
+
+  .message.user .message-avatar {
+    order: 2;
+
+    background: #eaf2ff;
+
+    border-color: #d7e5ff;
+
+    color: #2563eb;
+  }
+
+  .bubble {
+    max-width: 72%;
+
+    padding: 11px 14px;
+
+    border-radius: 14px;
+
+    font-size: 14px;
+
+    line-height: 1.55;
+
+    background: #ffffff;
+
+    border: 1px solid #e3e7ed;
+
+    color: #293345;
+
+    box-shadow: 0 2px 8px rgba(20, 30, 50, .03);
+  }
+
+  .message.user .bubble {
+    background: #2563eb;
+
+    border-color: #2563eb;
+
+    color: #ffffff;
+
+    border-bottom-right-radius: 4px;
+  }
+
+  .message.ai .bubble {
+    border-bottom-left-radius: 4px;
+  }
+
+  /* =========================
+     Audio
+  ========================= */
+
+  .audio-player {
+    width: 100%;
+
+    height: 34px;
+
+    margin-top: 9px;
+
+    border-radius: 8px;
+  }
+
+  .listen-button {
+    margin-top: 9px;
+
+    padding: 7px 11px;
+
+    border-radius: 8px;
+
+    border: 1px solid #d8e2f2;
+
+    background: #f4f7fc;
+
+    color: #2563eb;
+
+    font-size: 11px;
+
+    cursor: pointer;
+
+    transition: .2s ease;
+  }
+
+  .listen-button:hover {
+    background: #eaf2ff;
+  }
+
+  /* =========================
+     Voice Area
+  ========================= */
+
+  .voice-area {
+    padding: 16px 20px 24px;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+
+    border-top: 1px solid #e8ebf0;
+
+    background: #ffffff;
+  }
+
+  .state {
+    min-height: 18px;
+
+    margin-bottom: 10px;
+
+    color: #7c8798;
+
+    font-size: 11px;
+  }
+
+  .voice-button {
+    width: 68px;
+    height: 68px;
+
+    border: none;
+
+    border-radius: 50%;
+
+    display: grid;
+    place-items: center;
+
+    cursor: pointer;
+
+    background: #2563eb;
+
+    box-shadow:
+      0 8px 22px rgba(37, 99, 235, .22);
+
+    transition:
+      transform .2s ease,
+      background .2s ease;
+  }
+
+  .voice-button:hover {
+    transform: scale(1.05);
+
+    background: #1d4ed8;
+  }
+
+  .voice-button:active {
+    transform: scale(.95);
+  }
+
+  .voice-button.recording {
+    background: #ef4444;
+
+    animation: pulse 1.4s infinite;
+  }
+
+  @keyframes pulse {
+    50% {
+      box-shadow:
+        0 0 0 12px rgba(239, 68, 68, .12);
+    }
+  }
+
+  .mic {
+    width: 27px;
+    height: 27px;
+  }
+
+  .hint {
+    margin-top: 9px;
+
+    color: #9aa3b1;
+
+    font-size: 10px;
+  }
+
+  /* =========================
+     Sound Waves
+  ========================= */
+
+  .waves {
+    height: 22px;
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 3px;
+
+    margin-bottom: 8px;
+  }
+
+  .waves span {
+    width: 3px;
+    height: 7px;
+
+    border-radius: 4px;
+
+    background: #2563eb;
+
+    animation: wave .8s infinite ease-in-out;
+  }
+
+  .waves span:nth-child(1) {
+    animation-delay: 0s;
+  }
+
+  .waves span:nth-child(2) {
+    animation-delay: .1s;
+  }
+
+  .waves span:nth-child(3) {
+    animation-delay: .2s;
+  }
+
+  .waves span:nth-child(4) {
+    animation-delay: .3s;
+  }
+
+  .waves span:nth-child(5) {
+    animation-delay: .4s;
+  }
+
+  @keyframes wave {
+    50% {
+      height: 20px;
+    }
+  }
+
+  .hidden {
+    display: none !important;
+  }
+
+  /* =========================
+     Scrollbar
+  ========================= */
+
+  .chat::-webkit-scrollbar {
+    width: 5px;
+  }
+
+  .chat::-webkit-scrollbar-thumb {
+    background: #d5dae2;
+
+    border-radius: 10px;
+  }
+
+  /* =========================
+     Mobile
+  ========================= */
+
+  @media (max-width: 600px) {
+
+    header {
+      padding: 0 15px;
+    }
+
+    .chat {
+      padding: 20px 14px;
+    }
+
+    .welcome h2 {
+      font-size: 23px;
+    }
+
+    .bubble {
+      max-width: 82%;
+    }
+
+    .voice-button {
+      width: 64px;
+      height: 64px;
+    }
+  }
+</style>
+</head>
+
+<body>
+
+<div class="app">
+
+  <!-- Header -->
+
+  <header>
+
+    <div class="brand">
+
+      <div class="brand-icon">
+        +
+      </div>
+
+      <div>
+        <h1>SehatDost</h1>
+        <p>AI Clinic Assistant</p>
+      </div>
+
+    </div>
+
+    <div class="status">
+      <span class="status-dot"></span>
+      Online
+    </div>
+
+  </header>
+
+
+  <!-- Chat -->
+
+  <main class="chat" id="chat">
+
+    <div class="welcome" id="welcome">
+
+      <div class="welcome-icon">
+        🎙️
+      </div>
+
+      <h2>
+        How can I help you?
+      </h2>
+
+      <p>
+        Speak naturally in English, Urdu or Roman Urdu.
+        Ask about clinic services, timings or appointments.
+      </p>
+
+    </div>
+
+  </main>
+
+
+  <!-- Voice -->
+
+  <section class="voice-area">
+
+    <div class="state" id="state">
+      Tap the microphone to speak
+    </div>
+
+    <div class="waves hidden" id="waves">
+      <span></span>
+      <span></span>
+      <span></span>
+      <span></span>
+      <span></span>
+    </div>
+
+    <button
+      class="voice-button"
+      id="voiceButton"
+    >
+
+      <svg
+        class="mic"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="white"
+        stroke-width="2"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+      >
+
+        <rect
+          x="9"
+          y="2"
+          width="6"
+          height="12"
+          rx="3"
+        />
+
+        <path d="M5 10a7 7 0 0 0 14 0" />
+
+        <path d="M12 19v3" />
+
+        <path d="M8 22h8" />
+
+      </svg>
+
+    </button>
+
+    <div class="hint">
+      Tap to speak
+    </div>
+
+  </section>
+
+</div>
+
+
+<script>
+
+  // ==========================================
+  // Configuration
+  // ==========================================
+
+  const UPLIFT_API_KEY =
+    "sk_api_87dd933c98e80662265bfa3c42ac82e723ada9fdddf27500c5cd47b8c3e3da1f";
+
+  const STT_URL =
+    "https://api.upliftai.org/v1/transcribe/speech-to-text";
+
+  const RAG_URL =
+    "http://127.0.0.1:5001/api/ask";
+
+  const TTS_URL =
+    "https://ap-southeast-1.api.upliftai.org/v1/synthesis/text-to-speech";
+
+
+  // ==========================================
+  // Elements
+  // ==========================================
+
+  const voiceButton =
+    document.getElementById("voiceButton");
+
+  const state =
+    document.getElementById("state");
+
+  const waves =
+    document.getElementById("waves");
+
+  const chat =
+    document.getElementById("chat");
+
+  const welcome =
+    document.getElementById("welcome");
+
+
+  // ==========================================
+  // Recording
+  // ==========================================
+
+  let mediaRecorder = null;
+
+  let audioChunks = [];
+
+  let isRecording = false;
+
+
+  voiceButton.addEventListener(
+    "click",
+    toggleRecording
+  );
+
+
+  async function toggleRecording() {
+
+    if (isRecording) {
+
+      stopRecording();
+
+    } else {
+
+      await startRecording();
+
+    }
+
+  }
+
+
+  async function startRecording() {
+
+    try {
+
+      const stream =
+        await navigator.mediaDevices.getUserMedia({
+          audio: true
+        });
+
+
+      audioChunks = [];
+
+
+      mediaRecorder =
+        new MediaRecorder(stream);
+
+
+      mediaRecorder.ondataavailable =
+        event => {
+
+          if (event.data.size > 0) {
+
+            audioChunks.push(
+              event.data
+            );
+
+          }
+
+        };
+
+
+      mediaRecorder.onstop =
+        async () => {
+
+          stream
+            .getTracks()
+            .forEach(track => track.stop());
+
+
+          const audioBlob =
+            new Blob(
+              audioChunks,
+              {
+                type:
+                  mediaRecorder.mimeType
+              }
+            );
+
+
+          await processAudio(
+            audioBlob
+          );
+
+        };
+
+
+      mediaRecorder.start();
+
+
+      isRecording = true;
+
+
+      voiceButton.classList.add(
+        "recording"
+      );
+
+
+      state.textContent =
+        "Listening... tap when finished";
+
+
+      waves.classList.remove(
+        "hidden"
+      );
+
+    }
+
+    catch (error) {
+
+      console.error(error);
+
+      state.textContent =
+        "Microphone permission is required";
+
+    }
+
+  }
+
+
+  function stopRecording() {
+
+    if (
+      mediaRecorder &&
+      mediaRecorder.state !== "inactive"
+    ) {
+
+      mediaRecorder.stop();
+
+    }
+
+
+    isRecording = false;
+
+
+    voiceButton.classList.remove(
+      "recording"
+    );
+
+
+    waves.classList.add(
+      "hidden"
+    );
+
+  }
+
+
+  // ==========================================
+  // Main Pipeline
+  // ==========================================
+
+  async function processAudio(
+    audioBlob
+  ) {
+
+    try {
+
+      // Save user audio immediately
+
+      const userAudioUrl =
+        URL.createObjectURL(
+          audioBlob
+        );
+
+
+      // ------------------------------
+      // STT
+      // ------------------------------
+
+      state.textContent =
+        "Understanding you...";
+
+
+      const text =
+        await speechToText(
+          audioBlob
+        );
+
+
+      if (!text) {
+
+        throw new Error(
+          "No speech detected."
+        );
+
+      }
+
+
+      // Add user message WITH audio
+
+      addMessage(
+        text,
+        "user",
+        userAudioUrl
+      );
+
+
+      // ------------------------------
+      // RAG
+      // ------------------------------
+
+      state.textContent =
+        "Finding the best answer...";
+
+
+      const answer =
+        await askRAG(
+          text
+        );
+
+
+      // ------------------------------
+      // TTS
+      // ------------------------------
+
+      state.textContent =
+        "Generating voice...";
+
+
+      const aiAudioUrl =
+        await textToSpeech(
+          answer
+        );
+
+
+      // Add AI message WITH audio
+
+      addMessage(
+        answer,
+        "ai",
+        aiAudioUrl
+      );
+
+
+      state.textContent =
+        "Tap the microphone to speak";
+
+    }
+
+    catch (error) {
+
+      console.error(error);
+
+
+      addMessage(
+        "Sorry, something went wrong. Please try again.",
+        "ai"
+      );
+
+
+      state.textContent =
+        "Something went wrong. Try again.";
+
+    }
+
+  }
+
+
+  // ==========================================
+  // Speech To Text
+  // ==========================================
+
+  async function speechToText(
+    audioBlob
+  ) {
+
+    const formData =
+      new FormData();
+
+
+    formData.append(
+      "file",
+      audioBlob,
+      "recording.webm"
+    );
+
+
+    formData.append(
+      "model",
+      "scribe"
+    );
+
+
+    formData.append(
+      "language",
+      "ur"
+    );
+
+
+    console.log(
+      "Audio type:",
+      audioBlob.type
+    );
+
+
+    console.log(
+      "Audio size:",
+      audioBlob.size
+    );
+
+
+    const response =
+      await fetch(
+        STT_URL,
+        {
+          method: "POST",
+
+          headers: {
+            "Authorization":
+              `Bearer ${UPLIFT_API_KEY}`
+          },
+
+          body: formData
+        }
+      );
+
+
+    const data =
+      await response.json();
+
+
+    console.log(
+      "Uplift STT:",
+      data
+    );
+
+
+    if (!response.ok) {
+
+      throw new Error(
+        `STT ${response.status}: ${JSON.stringify(data)}`
+      );
+
+    }
+
+
+    // Uplift returns:
+    //
+    // {
+    //   "transcript": "جی۔"
+    // }
+
+    return (
+      data.transcript ||
+      ""
+    );
+
+  }
+
+
+  // ==========================================
+  // RAG
+  // ==========================================
+
+  async function askRAG(
+    question
+  ) {
+
+    const response =
+      await fetch(
+        RAG_URL,
+        {
+          method: "POST",
+
+          headers: {
+            "Content-Type":
+              "application/json"
+          },
+
+          body: JSON.stringify({
+            question:
+              question
+          })
+        }
+      );
+
+
+    if (!response.ok) {
+
+      const errorText =
+        await response.text();
+
+
+      throw new Error(
+        `RAG failed: ${errorText}`
+      );
+
+    }
+
+
+    const data =
+      await response.json();
+
+
+    console.log(
+      "RAG:",
+      data
+    );
+
+
+    return data.answer;
+
+  }
+
+
+  // ==========================================
+  // Text To Speech
+  // ==========================================
+
+  async function textToSpeech(
+    text
+  ) {
+
+    const response =
+      await fetch(
+        TTS_URL,
+        {
+          method: "POST",
+
+          headers: {
+
+            "Authorization":
+              `Bearer ${UPLIFT_API_KEY}`,
+
+            "Content-Type":
+              "application/json"
+
+          },
+
+          body: JSON.stringify({
+
+            voiceId:
+              "v_8eelc901",
+
+            text:
+              text,
+
+            outputFormat:
+              "MP3_22050_128"
+
+          })
+
+        }
+      );
+
+
+    if (!response.ok) {
+
+      const errorText =
+        await response.text();
+
+
+      throw new Error(
+        `TTS failed: ${errorText}`
+      );
+
+    }
+
+
+    const audioBlob =
+      await response.blob();
+
+
+    const audioUrl =
+      URL.createObjectURL(
+        audioBlob
+      );
+
+
+    // Return URL so it can be
+    // attached to the AI message.
+
+    return audioUrl;
+
+  }
+
+
+  // ==========================================
+  // Add Chat Message
+  // ==========================================
+
+  function addMessage(
+    text,
+    type,
+    audioUrl = null
+  ) {
+
+    if (welcome) {
+
+      welcome.remove();
+
+    }
+
+
+    const message =
+      document.createElement(
+        "div"
+      );
+
+
+    message.className =
+      `message ${type}`;
+
+
+    const avatar =
+      document.createElement(
+        "div"
+      );
+
+
+    avatar.className =
+      "message-avatar";
+
+
+    avatar.textContent =
+      type === "user"
+        ? "You"
+        : "✦";
+
+
+    const bubble =
+      document.createElement(
+        "div"
+      );
+
+
+    bubble.className =
+      "bubble";
+
+
+    // Text
+
+    const textElement =
+      document.createElement(
+        "div"
+      );
+
+
+    textElement.textContent =
+      text;
+
+
+    bubble.appendChild(
+      textElement
+    );
+
+
+    // ==================================
+    // Audio Player
+    // ==================================
+
+    if (audioUrl) {
+
+      const audio =
+        document.createElement(
+          "audio"
+        );
+
+
+      audio.className =
+        "audio-player";
+
+
+      audio.controls = true;
+
+
+      audio.src =
+        audioUrl;
+
+
+      bubble.appendChild(
+        audio
+      );
+
+
+      // Optional small button
+
+      const listenButton =
+        document.createElement(
+          "button"
+        );
+
+
+      listenButton.className =
+        "listen-button";
+
+
+      listenButton.textContent =
+        "▶ Listen";
+
+
+      listenButton.onclick =
+        () => {
+
+          if (audio.paused) {
+
+            audio.play();
+
+            listenButton.textContent =
+              "⏸ Pause";
+
+          } else {
+
+            audio.pause();
+
+            listenButton.textContent =
+              "▶ Listen";
+
+          }
+
+        };
+
+
+      audio.onended =
+        () => {
+
+          listenButton.textContent =
+            "▶ Listen";
+
+        };
+
+
+      bubble.appendChild(
+        listenButton
+      );
+
+    }
+
+
+    message.appendChild(
+      avatar
+    );
+
+
+    message.appendChild(
+      bubble
+    );
+
+
+    chat.appendChild(
+      message
+    );
+
+
+    chat.scrollTop =
+      chat.scrollHeight;
+
+
+    return message;
+
+  }
+
+</script>
+
+</body>
+</html>
